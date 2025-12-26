@@ -1,6 +1,7 @@
 package com.ashvin.projects.hospitalManagment;
 
 import com.ashvin.projects.hospitalManagment.entity.Patient;
+import com.ashvin.projects.hospitalManagment.entity.type.BloodGroupType;
 import com.ashvin.projects.hospitalManagment.repository.PatientRepository;
 import com.ashvin.projects.hospitalManagment.service.PatientService;
 import jakarta.persistence.EntityNotFoundException;
@@ -42,9 +43,27 @@ public class PatientTests {
         /*List<Patient> patientList = patientRepository.findByBirthDateOrEmail(LocalDate.of
                 (1993,07,11),"neha.iyer@example.com");
 */
-         List<Patient> patientList = patientRepository.findByNameContainingOrderByIdDesc("Di");
+//         List<Patient> patientList = patientRepository.findByNameContainingOrderByIdDesc("Di");
 
-        System.out.println(patientList);
+    //    List<Patient> patientList = patientRepository.findByBloodGroup(BloodGroupType.A_POSITIVE);
+
+      /*  List<Patient> patientList = patientRepository.findByBornAfterDate(LocalDate.of(1993,03,14));
+
+        for(Patient patient : patientList) {
+            System.out.println(patient);
+        }
+
+        List<Object[]> bloodGroupList = patientRepository.countEachBloodGroupType();
+
+        for(Object[] objects : bloodGroupList) {
+            System.out.println(objects[0] + " : " + objects[1]);
+        }
+
+        List<Patient> patientList2 = patientRepository.findAllPatients();
+        System.out.println(patientList2);*/
+
+        int rowsUpdated = patientRepository.updateNameWithId("Arav Sharma",1L);
+        System.out.println(rowsUpdated);
     }
 }
 
