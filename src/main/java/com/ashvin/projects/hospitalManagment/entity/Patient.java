@@ -31,7 +31,7 @@ public class Patient {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // name = "patient_namef"
+    // name = "patient_name"  --> to change the column name in the database table
     @Column(nullable = false,length = 40)   // nullable = false means name is now a required field ( name can not be NULL )
     private String name;
 
@@ -49,5 +49,8 @@ public class Patient {
 
     @Enumerated(EnumType.STRING)
     private BloodGroupType  bloodGroup;
+
+    @OneToOne
+    private Insurance insurance;
 
 }

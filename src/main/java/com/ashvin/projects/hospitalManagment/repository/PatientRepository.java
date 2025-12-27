@@ -1,7 +1,10 @@
 package com.ashvin.projects.hospitalManagment.repository;
 
+import com.ashvin.projects.hospitalManagment.dto.BloodGroupCountResponseEntity;
 import com.ashvin.projects.hospitalManagment.entity.Patient;
 import com.ashvin.projects.hospitalManagment.entity.type.BloodGroupType;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -35,13 +38,20 @@ public interface PatientRepository extends JpaRepository<Patient,Long> {
     @Query("SELECT p FROM Patient p WHERE p.birthDate > :birthDate")
     List<Patient> findByBornAfterDate(@Param("birthDate") LocalDate birthdate);
 
-    @Query("select p.bloodGroup, count(p) from Patient p group by p.bloodGroup")
-    List<Object[]> countEachBloodGroupType();
+  //  @Query("select p.bloodGroup, count(p) from Patient p group by p.bloodGroup")
+  //  List<Object[]> countEachBloodGroupType();
 
-    // native query = SQL query
+    // this is same as above query but using DTO to hold the response using projection technique
+    @Query("select new com.ashvin.projects.hospitalManagment.dto.BloodGroupCountResponseEntity( p.bloodGroup," +
+            " count(p)) from Patient p group by p.bloodGroup")
+    List<BloodGroupCountResponseEntity> countEachBloodGroupType();
 
-    @Query(value = "select * from patient", nativeQuery = true)
-    List<Patient> findAllPatients();
+
+   /* @Query(value = "select * from patient", nativeQuery = true)   // native query = SQL query
+    List<Patient> findAllPatients();*/
+
+    @Query(value = "select * from patient", nativeQuery = true)   // using pagination to get all patients
+    Page<Patient> findAllPatients(Pageable pageable);
 
     @Transactional
     @Modifying

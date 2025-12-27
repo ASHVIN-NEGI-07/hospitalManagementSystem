@@ -1,5 +1,6 @@
 package com.ashvin.projects.hospitalManagment;
 
+import com.ashvin.projects.hospitalManagment.dto.BloodGroupCountResponseEntity;
 import com.ashvin.projects.hospitalManagment.entity.Patient;
 import com.ashvin.projects.hospitalManagment.entity.type.BloodGroupType;
 import com.ashvin.projects.hospitalManagment.repository.PatientRepository;
@@ -9,6 +10,9 @@ import lombok.ToString;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -62,8 +66,19 @@ public class PatientTests {
         List<Patient> patientList2 = patientRepository.findAllPatients();
         System.out.println(patientList2);*/
 
-        int rowsUpdated = patientRepository.updateNameWithId("Arav Sharma",1L);
-        System.out.println(rowsUpdated);
+      /*  int rowsUpdated = patientRepository.updateNameWithId("Arav Sharma",1L);
+        System.out.println(rowsUpdated);*/
+
+      /*  List<BloodGroupCountResponseEntity> bloodGroupList = patientRepository.countEachBloodGroupType();
+
+        for(BloodGroupCountResponseEntity bloodGroupCountResponse : bloodGroupList) {
+            System.out.println(bloodGroupCountResponse);
+        }*/
+
+        Page<Patient> patientList3 = patientRepository.findAllPatients(PageRequest.of(0,2, Sort.by("name")));
+        for(Patient patient : patientList3) {
+            System.out.println(patient);
+        }
     }
 }
 
