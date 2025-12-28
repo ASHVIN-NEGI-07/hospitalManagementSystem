@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Configuration;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @ToString
@@ -41,6 +42,7 @@ public class Patient {
     @Column(unique = true, nullable = false)
     private String email;
 
+    @Column(nullable = false)
     private String gender;
 
     @CreationTimestamp
@@ -51,6 +53,9 @@ public class Patient {
     private BloodGroupType  bloodGroup;
 
     @OneToOne
+    @JoinColumn(name = "patient_insurance_id")  // owning side of the relationship
     private Insurance insurance;
 
+    @OneToMany(mappedBy = "patient")
+    private List<Appointment> appointment;
 }
