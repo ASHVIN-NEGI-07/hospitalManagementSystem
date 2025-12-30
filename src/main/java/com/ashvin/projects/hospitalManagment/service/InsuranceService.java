@@ -21,9 +21,18 @@ public class InsuranceService {
         Patient patient = patientRepository.findById(patientId).
                 orElseThrow(() -> new EntityNotFoundException("Patient not found with id: " + patientId));
 
-        patient.setInsurance(insurance);
+        patient.setInsurance(insurance);   // dirty checking will save the insurance entity
         insurance.setPatient(patient);  // bidirectional consitency mantainence
 
         return  patient;
+    }
+
+    @Transactional
+    public Patient dissociateInsuranceFromPatient(Long patientId){
+        Patient patient = patientRepository.findById(patientId).orElseThrow();
+
+        patient.setInsurance(null);
+
+        return patient;
     }
 }

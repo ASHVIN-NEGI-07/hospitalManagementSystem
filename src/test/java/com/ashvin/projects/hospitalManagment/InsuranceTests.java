@@ -23,6 +23,9 @@ public class InsuranceTests {
                 .validUntil(LocalDate.of(2030,12,31))
                 .build();
 
+        // our object is in transient state it is not yet saved in the database
+
+
         Patient patient = insuranceService.assignInsuranceToPatient(insurance,1L);
         System.out.println(patient);
     }
