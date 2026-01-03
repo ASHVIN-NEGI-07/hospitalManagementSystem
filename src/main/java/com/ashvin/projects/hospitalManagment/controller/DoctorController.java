@@ -24,8 +24,7 @@ public class DoctorController {
    private final AppointmentService appointmentService;
 
    @GetMapping("/appointments")
-    public ResponseEntity<List<AppointmentResponseDto>> getAllAppointmentsOfDoctor(Doctor doctor){
+    public ResponseEntity<List<AppointmentResponseDto>> getAllAppointmentsOfDoctor(){
        return ResponseEntity.ok(appointmentService.getAllAppointmentsOfDoctor(1L));
    }
-
 }
