@@ -31,7 +31,7 @@ public class InsuranceService {
     public Patient dissociateInsuranceFromPatient(Long patientId){
         Patient patient = patientRepository.findById(patientId).orElseThrow();
 
-        patient.setInsurance(null);
+        patient.setInsurance(null);  // patient gets dirty due to this change , so insurance entity will be removed from DB
 
         return patient;
     }
