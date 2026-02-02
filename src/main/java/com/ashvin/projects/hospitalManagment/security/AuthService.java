@@ -2,9 +2,13 @@ package com.ashvin.projects.hospitalManagment.security;
 
 import com.ashvin.projects.hospitalManagment.dto.LoginRequestDto;
 import com.ashvin.projects.hospitalManagment.dto.LoginResponseDto;
+import com.ashvin.projects.hospitalManagment.dto.SignUpRequestDto;
 import com.ashvin.projects.hospitalManagment.dto.SignupResponseDto;
+import com.ashvin.projects.hospitalManagment.entity.Patient;
 import com.ashvin.projects.hospitalManagment.entity.User;
 import com.ashvin.projects.hospitalManagment.entity.type.AuthProviderType;
+import com.ashvin.projects.hospitalManagment.entity.type.RoleType;
+import com.ashvin.projects.hospitalManagment.repository.PatientRepository;
 import com.ashvin.projects.hospitalManagment.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +21,8 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Set;
+
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -25,6 +31,7 @@ public class AuthService {
     private final AuthUtil authUtil;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final PatientRepository patientRepository;
 
     public LoginResponseDto login(LoginRequestDto loginRequestDto) {
         Authentication authentication = authenticationManager.authenticate(
@@ -38,13 +45,14 @@ public class AuthService {
         return new LoginResponseDto(token,user.getId());
     }
 
-    public User signUpInternal(LoginRequestDto signupRequestDto,AuthProviderType authProviderType,String providerId) throws IllegalAccessException {
+    public User signUpInternal(SignUpRequestDto signupRequestDto,AuthProviderType authProviderType,String providerId) throws IllegalAccessException {
         User user = userRepository.findByUsername(signupRequestDto.getUsername()).orElse(null);
 
         if(user!=null) throw new IllegalAccessException("User alredy exists");
 
         user  =  User.builder()
                 .username((signupRequestDto.getUsername()))
+                .roles(signupRequestDto.getRoles())  //  ROLE.PATIENT this should be preffered as we dont want admin role during sign up (not a good practice)
                 .providerId(providerId)
                 .providerType(authProviderType)
                 .build();
@@ -55,12 +63,23 @@ public class AuthService {
         }
         // else password remains null
 
-        return userRepository.save(user);
+
+        user = userRepository.save(user);
+
+        // we will require patient's  name and email at time of signup now
+        Patient patient = Patient.builder()
+                .name(signupRequestDto.getName())
+                .email(signupRequestDto.getUsername())
+                .user(user)
+                .build();
+
+        patientRepository.save(patient);
+
+        return user;
     }
 
-
     // login controller
-    public SignupResponseDto signup(LoginRequestDto signupRequestDto) throws IllegalAccessException {
+    public SignupResponseDto signup(SignUpRequestDto signupRequestDto) throws IllegalAccessException {
 
         User user = signUpInternal(signupRequestDto,AuthProviderType.EMAIL,null);
         return new SignupResponseDto(user.getId(),user.getUsername());
@@ -79,13 +98,14 @@ public class AuthService {
         User user = userRepository.findByProviderIdAndProviderType(providerId,providerType).orElse(null);
 
         String email = oAuth2User.getAttribute("email");
+        String name = oAuth2User.getAttribute("name");
 
         User emailUser = userRepository.findByUsername(email).orElse(null);
 
         if(user == null && emailUser == null) {
             // signup flow :
             String username = authUtil.determineUsernameFormOAuth2User(oAuth2User,registerationId,providerId);
-            user = signUpInternal(new LoginRequestDto(username,null),providerType,providerId);
+            user = signUpInternal(new SignUpRequestDto(username,null,name,Set.of(RoleType.PATIENT)),providerType,providerId);
         }
         else if (user != null) {
 

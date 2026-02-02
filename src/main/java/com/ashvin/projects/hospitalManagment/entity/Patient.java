@@ -2,9 +2,7 @@ package com.ashvin.projects.hospitalManagment.entity;
 
 import com.ashvin.projects.hospitalManagment.entity.type.BloodGroupType;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.context.annotation.Configuration;
 
@@ -27,6 +25,9 @@ import java.util.List;
                 @Index(name = "idx_patient_birth_date",columnList = "birthDate")
         }
 )
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class Patient {
 
     @Id
@@ -43,8 +44,11 @@ public class Patient {
     @Column(unique = true, nullable = false)
     private String email;
 
-    @Column(nullable = false)
     private String gender;
+
+    @OneToOne
+    @MapsId
+    private User user;
 
     @CreationTimestamp
     @Column(updatable = false)

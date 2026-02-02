@@ -2,6 +2,7 @@ package com.ashvin.projects.hospitalManagment.controller;
 
 import com.ashvin.projects.hospitalManagment.dto.LoginRequestDto;
 import com.ashvin.projects.hospitalManagment.dto.LoginResponseDto;
+import com.ashvin.projects.hospitalManagment.dto.SignUpRequestDto;
 import com.ashvin.projects.hospitalManagment.dto.SignupResponseDto;
 import com.ashvin.projects.hospitalManagment.security.AuthService;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +25,7 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<SignupResponseDto> signup(@RequestBody LoginRequestDto signupRequestDto) throws IllegalAccessException {
+    public ResponseEntity<SignupResponseDto> signup(@RequestBody SignUpRequestDto signupRequestDto) throws IllegalAccessException {
         return ResponseEntity.ok(authService.signup(signupRequestDto));
     }
 }
