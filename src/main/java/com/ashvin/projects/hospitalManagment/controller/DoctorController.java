@@ -4,12 +4,14 @@ package com.ashvin.projects.hospitalManagment.controller;
 import com.ashvin.projects.hospitalManagment.dto.AppointmentResponseDto;
 import com.ashvin.projects.hospitalManagment.entity.Doctor;
 import com.ashvin.projects.hospitalManagment.entity.Patient;
+import com.ashvin.projects.hospitalManagment.entity.User;
 import com.ashvin.projects.hospitalManagment.repository.PatientRepository;
 import com.ashvin.projects.hospitalManagment.service.AppointmentService;
 import com.ashvin.projects.hospitalManagment.service.PatientService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,6 +27,11 @@ public class DoctorController {
 
    @GetMapping("/appointments")
     public ResponseEntity<List<AppointmentResponseDto>> getAllAppointmentsOfDoctor(){
-       return ResponseEntity.ok(appointmentService.getAllAppointmentsOfDoctor(1L));
+
+       // getPrincipal() will give us name as we had stored name in principal
+       User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+       // 1 doctor should only be able to see his/her appointments
+       return ResponseEntity.ok(appointmentService.getAllAppointmentsOfDoctor(user.getId()));
    }
 }

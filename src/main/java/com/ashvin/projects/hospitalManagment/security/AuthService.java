@@ -52,7 +52,7 @@ public class AuthService {
 
         user  =  User.builder()
                 .username((signupRequestDto.getUsername()))
-                .roles(signupRequestDto.getRoles())  //  ROLE.PATIENT this should be preffered as we dont want admin role during sign up (not a good practice)
+                .roles(signupRequestDto.getRoles())  //  ROLE.PATIENT this should be preffered as we don't want admin role during sign up (not a good practice)
                 .providerId(providerId)
                 .providerType(authProviderType)
                 .build();
