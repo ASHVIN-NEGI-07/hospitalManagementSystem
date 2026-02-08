@@ -2,6 +2,7 @@ package com.ashvin.projects.hospitalManagment.entity;
 
 import com.ashvin.projects.hospitalManagment.entity.type.AuthProviderType;
 import com.ashvin.projects.hospitalManagment.entity.type.RoleType;
+import com.ashvin.projects.hospitalManagment.security.RolePermissionMappiing;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -46,10 +47,18 @@ public class User implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
 
-        return roles.stream()
+      /*  return roles.stream()
                 // converting role into something that extends GrantedAuthority
-                // role.name as it is a enum so using this method we can get name from an enum in this way in java
+                // role.name as it is an enum so using this method we can get name from an enum in this way in java
                 .map(role -> new SimpleGrantedAuthority("ROLE_"+ role.name()))
-                .collect(Collectors.toList());
+                .collect(Collectors.toList());*/
+
+        Set<SimpleGrantedAuthority> authorities = new HashSet<>();
+        roles.forEach(role -> {
+            Set<SimpleGrantedAuthority> permissions = RolePermissionMappiing.getAuthoritiesForRole(role);
+            authorities.addAll(permissions);
+            authorities.add(new SimpleGrantedAuthority("ROLE_" + role.name()));
+        });
+        return authorities;
     }
 }

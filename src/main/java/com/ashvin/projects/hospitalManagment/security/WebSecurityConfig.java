@@ -1,5 +1,6 @@
 package com.ashvin.projects.hospitalManagment.security;
 
+import com.ashvin.projects.hospitalManagment.entity.type.PermissionType;
 import com.ashvin.projects.hospitalManagment.entity.type.RoleType;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -8,9 +9,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.User;
@@ -24,6 +27,7 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
+import static com.ashvin.projects.hospitalManagment.entity.type.PermissionType.*;
 import static com.ashvin.projects.hospitalManagment.entity.type.RoleType.*;
 
 
@@ -33,6 +37,7 @@ import java.io.IOException;
 @Configuration
 @RequiredArgsConstructor
 @Slf4j
+@EnableWebSecurity
 public class WebSecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
@@ -49,6 +54,7 @@ public class WebSecurityConfig {
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/public/**","/auth/**").permitAll()
+                        .requestMatchers(HttpMethod.DELETE,"/admin/**").hasAnyAuthority(APPOINTMENT_DELETE.name(),USER_MANAGE.name())
                         .requestMatchers("/admin/**").hasRole(ADMIN.name())   // Only ADMIN role can access /admin/**
                         .requestMatchers("/doctors/**").hasAnyRole(DOCTOR.name(),ADMIN.name()) // DOCTOR and ADMIN roles can access /doctors/**
                         // by default all users are patients so no need to specifically define patient role here
